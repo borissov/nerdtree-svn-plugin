@@ -7,7 +7,13 @@ let g:loaded_nerdtree_svn_menuitem = 1
 
 function! NERDTreeSvnDirectoryCheck()
     let curNode = g:NERDTreeFileNode.GetSelected()
-    return curNode.path.isDirectory
+    if curNode.path.isDirectory
+        let output = system("svn info ".curNode.path.str() . g:NERDTreePath.Slash())
+        if output !~ "E155007"
+            return 1
+        endif
+    endif
+    return 0
 endfunction
 
 

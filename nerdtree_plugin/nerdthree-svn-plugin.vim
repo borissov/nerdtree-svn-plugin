@@ -3,7 +3,7 @@ if exists("g:loaded_nerdtree_svn_menuitem")
     finish
 endif
 let g:loaded_nerdtree_svn_menuitem = 1
-
+let g:svn_message = ''
 
 function! NERDTreeSvnDirectoryCheck()
     let curNode = g:NERDTreeFileNode.GetSelected()
@@ -25,8 +25,8 @@ call NERDTreeAddMenuItem({
 
 function! NERDTreeSvnCommit()
     let curNode = g:NERDTreeFileNode.GetSelected()
-    let chmodArg = input("commit message: ")
-    execute '!svn commit ' . curNode.path.str({'escape': 1}) . ' -m "' . chmodArg . '" '
+    let g:svn_message = input('Commit Message: ', g:svn_message)
+    execute '!svn commit ' . curNode.path.str({'escape': 1}) . ' -m "' . g:svn_message . '" '
     if exists('g:loaded_signify') " signify force to refresh
        execute "SignifyRefresh"
     endif
@@ -61,13 +61,13 @@ call NERDTreeAddMenuItem({
 
 function! NERDTreeSvnSyncDirCallback()
     let curNode = g:NERDTreeFileNode.GetSelected()
-    let chmodArg = input("commit message: ")
+    let g:svn_message = input('Commit Message: ', g:svn_message)
     " Deleted files
     execute "!svn status " . curNode.path.str({'escape': 1}) . "/ | grep '^\\!' | sed 's/\\! *//' | xargs -I\\% svn rm \\%"  
     " Add files
     execute '!svn add --force ' . curNode.path.str({'escape': 1}) . '  --auto-props --parents --depth infinity -q'
     " Commit files
-    execute '!svn commit ' . curNode.path.str({'escape': 1}) . ' -m "' . chmodArg . '" '
+    execute '!svn commit ' . curNode.path.str({'escape': 1}) . ' -m "' . g:svn_message . '" '
     " Update files
     execute '!svn update ' . curNode.path.str({'escape': 1}) 
     if exists('g:loaded_signify') " signify force to refresh

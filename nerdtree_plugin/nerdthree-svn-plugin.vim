@@ -64,6 +64,7 @@ call NERDTreeAddMenuItem({
 function! NERDTreeSvnSyncDirCallback()
     let curNode = g:NERDTreeFileNode.GetSelected()
     let g:svn_message = input('Commit Message: ', g:svn_message)
+    redraw
     " Deleted files
     execute "!svn status " . curNode.path.str({'escape': 1}) . "/ | grep '^\\!' | sed 's/\\! *//' | xargs -I\\% svn rm \\%"  
     " Add files

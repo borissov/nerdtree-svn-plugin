@@ -44,6 +44,7 @@ call NERDTreeAddMenuItem({
 
 function! NERDTreeSvnUpdate()
     let curNode = g:NERDTreeFileNode.GetSelected() 
+    redraw
     execute '!svn update ' . curNode.path.str({'escape': 1}) 
     if exists('g:loaded_signify') " signify force to refresh
        execute "SignifyRefresh"

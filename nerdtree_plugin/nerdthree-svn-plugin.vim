@@ -25,8 +25,10 @@ call NERDTreeAddMenuItem({
 
 function! NERDTreeSvnCommit()
     let curNode = g:NERDTreeFileNode.GetSelected()
-    let g:svn_message = input('Commit Message: ', g:svn_message)
-    execute 'clear'
+    let g:svn_message = input("Commit Message\n".
+                               \ "==========================================================\n", g:svn_message)
+    
+    redraw
     execute '!svn commit ' . curNode.path.str({'escape': 1}) . ' -m "' . g:svn_message . '" '
     if exists('g:loaded_signify') " signify force to refresh
        execute "SignifyRefresh"

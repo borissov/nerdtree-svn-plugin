@@ -54,7 +54,6 @@ function! NERDTreeSvnUpdate()
 endfunction
 
 
-
 call NERDTreeAddMenuItem({
             \ 'text': '(z)svn sync',
             \ 'shortcut': 'z',
@@ -73,6 +72,24 @@ function! NERDTreeSvnSyncDirCallback()
     execute '!svn commit ' . curNode.path.str({'escape': 1}) . ' -m "' . g:svn_message . '" '
     " Update files
     execute '!svn update ' . curNode.path.str({'escape': 1}) 
+    if exists('g:loaded_signify') " signify force to refresh
+       execute "SignifyRefresh"
+    endif
+    call curNode.refresh()
+    call NERDTreeRender()
+endfunction
+
+
+call NERDTreeAddMenuItem({
+            \ 'text': '(e)svn cleanup',
+            \ 'shortcut': 'e',
+            \ 'callback': 'NERDTreeSvnCleanup',
+            \ 'isActiveCallback': 'NERDTreeSvnDirectoryCheck'})
+
+function! NERDTreeSvnCleanup()
+    let curNode = g:NERDTreeFileNode.GetSelected() 
+    redraw
+    execute '!svn cleanup ' . curNode.path.str({'escape': 1}) 
     if exists('g:loaded_signify') " signify force to refresh
        execute "SignifyRefresh"
     endif

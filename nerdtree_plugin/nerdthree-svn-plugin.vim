@@ -16,12 +16,21 @@ function! NERDTreeSvnDirectoryCheck()
     return 0
 endfunction
 
+function! NERDTreeSvnCheck()
+    let curNode = g:NERDTreeFileNode.GetSelected()
+    let output = system("svn info ".curNode.path.str() . g:NERDTreePath.Slash())
+    if output !~ "E155007"
+        return 1
+    endif
+    return 0
+endfunction
+
 
 call NERDTreeAddMenuItem({
             \ 'text': '(w)svn commit',
             \ 'shortcut': 'w',
             \ 'callback': 'NERDTreeSvnCommit',
-            \ 'isActiveCallback': 'NERDTreeSvnDirectoryCheck'})
+            \ 'isActiveCallback': 'NERDTreeSvnCheck'})
 
 function! NERDTreeSvnCommit()
     let curNode = g:NERDTreeFileNode.GetSelected()
@@ -40,12 +49,29 @@ call NERDTreeAddMenuItem({
             \ 'text': '(u)svn update',
             \ 'shortcut': 'u',
             \ 'callback': 'NERDTreeSvnUpdate',
-            \ 'isActiveCallback': 'NERDTreeSvnDirectoryCheck'})
+            \ 'isActiveCallback': 'NERDTreeSvnCheck'})
 
 function! NERDTreeSvnUpdate()
     let curNode = g:NERDTreeFileNode.GetSelected() 
     redraw
     execute '!svn update ' . curNode.path.str({'escape': 1}) 
+    if exists('g:loaded_signify') " signify force to refresh
+       execute "SignifyRefresh"
+    endif
+    call curNode.refresh()
+    call NERDTreeRender()
+endfunction
+
+call NERDTreeAddMenuItem({
+            \ 'text': '(q)svn add',
+            \ 'shortcut': 'q',
+            \ 'callback': 'NERDTreeSvnAdd',
+            \ 'isActiveCallback': 'NERDTreeSvnCheck'})
+
+function! NERDTreeSvnAdd()
+    let curNode = g:NERDTreeFileNode.GetSelected() 
+    redraw
+    execute '!svn add ' . curNode.path.str({'escape': 1}) 
     if exists('g:loaded_signify') " signify force to refresh
        execute "SignifyRefresh"
     endif
